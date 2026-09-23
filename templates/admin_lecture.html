@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="crumb">
+  <a href="{{ url_for('admin_dashboard') }}">لوحة الأدمن</a> ← {{ lecture.subject.name }} ← {{ lecture.name }}
+</div>
+<h1>{{ lecture.name }}</h1>
+
+<div class="form-box">
+  <h2 style="margin-top:0;">➕ إضافة مادة (مذكرة / فيديو / رابط)</h2>
+  <form method="post" action="{{ url_for('admin_add_material') }}" enctype="multipart/form-data">
+    <input type="hidden" name="lecture_id" value="{{ lecture.id }}">
+
+    <label>النوع</label>
+    <select name="material_type" required>
+      <option value="note">📄 مذكرة</option>
+      <option value="video">🎥 فيديو</option>
+      <option value="link">🔗 رابط فقط</option>
+    </select>
+
+    <label>العنوان</label>
+    <input type="text" name="title" required placeholder="مثال: مذكرة المحاضرة كاملة">
+
+    <label>ارفع ملف (لو النوع مذكرة أو فيديو)</label>
+    <input type="file" name="file">
+
+    <label>أو حط رابط (يوتيوب / درايف / أي رابط)</label>
+    <input type="text" name="url" placeholder="https://...">
+
+    <label>وصف مختصر (اختياري)</label>
+    <textarea name="description" placeholder="ملاحظات بسيطة عن المحتوى"></textarea>
+
+    <div style="margin-top:16px;">
+      <button class="btn" type="submit">حفظ</button>
+    </div>
+  </form>
+</div>
+
+<h2>المواد الحالية</h2>
+{% set icons = {"note": "📄", "video": "🎥", "link": "🔗"} %}
+{% if lecture.materials %}
+  {% for m in lecture.materials %}
+  <div class="material-row">
+    <div>
+      <span class="badge">{{ icons.get(m.material_type, "📎") }}</span>
+      <strong>{{ m.title }}</strong>
+      {% if m.description %}<div class="meta">{{ m.description }}</div>{% endif %}
+    </div>
+    <form method="post" action="{{ url_for('admin_delete_material', material_id=m.id) }}"
+          onsubmit="return confirm('متأكد إنك عاوز تمسح المادة دي؟');">
+      <button class="btn danger" type="submit">حذف</button>
+    </form>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="empty-state"><p>لسه مفيش مواد مرفوعة للمحاضرة دي.</p></div>
+{% endif %}
+{% endblock %}

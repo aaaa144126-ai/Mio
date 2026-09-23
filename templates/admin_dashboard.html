@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center;">
+  <h1>لوحة تحكم الأدمن</h1>
+  <a class="btn secondary" href="{{ url_for('admin_logout') }}">خروج</a>
+</div>
+
+<h2>🆘 طلبات مساعدة مفتوحة ({{ open_requests|length }})</h2>
+{% if open_requests %}
+  {% for r in open_requests %}
+  <div class="request-row">
+    <strong>#{{ r.id }}</strong> — {{ r.subject_name or "عام" }}
+    <div class="meta">{{ r.description }}</div>
+    <div class="meta">من: {{ r.student_name }} (@{{ r.telegram_username or "-" }})</div>
+  </div>
+  {% endfor %}
+  <p><a href="{{ url_for('admin_requests') }}">عرض كل الطلبات</a></p>
+{% else %}
+  <p class="lede">مفيش طلبات مفتوحة دلوقتي.</p>
+{% endif %}
+
+<h2>➕ إضافة ترم جديد</h2>
+<form class="inline-form" method="post" action="{{ url_for('admin_add_term') }}">
+  <input type="text" name="name" placeholder="اسم الترم، مثال: الترم الأول" required>
+  <button class="btn" type="submit">إضافة</button>
+</form>
+
+<h2>📚 الترمات والمواد</h2>
+{% if terms %}
+  {% for term in terms %}
+  <div class="form-box">
+    <strong>{{ term.name }}</strong>
+    <form class="inline-form" method="post" action="{{ url_for('admin_add_subject') }}">
+      <input type="hidden" name="term_id" value="{{ term.id }}">
+      <input type="text" name="name" placeholder="اسم مادة جديدة" required>
+      <button class="btn secondary" type="submit">إضافة مادة</button>
+    </form>
+
+    {% if term.subjects %}
+    <div class="card-list" style="margin-top:10px;">
+      {% for subject in term.subjects %}
+      <div class="material-row" style="align-items:center;">
+        <div>
+          <strong>{{ subject.name }}</strong>
+          <div class="meta">{{ subject.lectures|length }} محاضرة</div>
+        </div>
+        <div>
+          <form class="inline-form" style="margin:0 0 8px;" method="post" action="{{ url_for('admin_add_lecture') }}">
+            <input type="hidden" name="subject_id" value="{{ subject.id }}">
+            <input type="text" name="name" placeholder="اسم محاضرة جديدة" required style="max-width:180px;">
+            <button class="btn secondary" type="submit">إضافة محاضرة</button>
+          </form>
+        </div>
+      </div>
+      {% for lecture in subject.lectures %}
+        <a class="card-link" style="margin-inline-start:20px;" href="{{ url_for('admin_view_lecture', lecture_id=lecture.id) }}">
+          <span>🗂 {{ lecture.name }}</span>
+          <span class="arrow">←</span>
+        </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="empty-state"><p>ضيف أول ترم عشان تبدأ.</p></div>
+{% endif %}
+{% endblock %}

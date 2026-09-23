@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>محتوى الفرقة التالتة</h1>
+<p class="lede">اختار الترم عشان توصل للمواد والمحاضرات والمذكرات والفيديوهات والروابط.</p>
+
+{% if terms %}
+<div class="card-list">
+  {% for term in terms %}
+  <a class="card-link" href="{{ url_for('view_term', term_id=term.id) }}">
+    <span>{{ term.name }}</span>
+    <span class="arrow">←</span>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <p>لسه معملناش ترمات. الأدمن يقدر يضيف من لوحة التحكم أو بأمر <code>/addmaterial</code> في البوت.</p>
+</div>
+{% endif %}
+{% endblock %}

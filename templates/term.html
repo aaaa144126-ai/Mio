@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="crumb"><a href="{{ url_for('home') }}">الرئيسية</a> ← {{ term.name }}</div>
+<h1>{{ term.name }}</h1>
+
+{% if term.subjects %}
+<div class="card-list">
+  {% for subject in term.subjects %}
+  <a class="card-link" href="{{ url_for('view_subject', subject_id=subject.id) }}">
+    <span>{{ subject.name }}</span>
+    <span class="arrow">←</span>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><p>لسه مفيش مواد مضافة في الترم ده.</p></div>
+{% endif %}
+{% endblock %}

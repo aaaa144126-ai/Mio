@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="crumb">
+  <a href="{{ url_for('home') }}">الرئيسية</a> ←
+  <a href="{{ url_for('view_term', term_id=lecture.subject.term_id) }}">{{ lecture.subject.term.name }}</a> ←
+  <a href="{{ url_for('view_subject', subject_id=lecture.subject_id) }}">{{ lecture.subject.name }}</a> ←
+  {{ lecture.name }}
+</div>
+<h1>{{ lecture.name }}</h1>
+
+{% set icons = {"note": "📄", "video": "🎥", "link": "🔗"} %}
+{% set labels = {"note": "مذكرة", "video": "فيديو", "link": "رابط"} %}
+
+{% if lecture.materials %}
+  {% for m in lecture.materials %}
+  <div class="material-row">
+    <div>
+      <span class="badge">{{ icons.get(m.material_type, "📎") }} {{ labels.get(m.material_type, m.material_type) }}</span>
+      <strong>{{ m.title }}</strong>
+      {% if m.description %}<div class="meta">{{ m.description }}</div>{% endif %}
+    </div>
+    <div>
+      {% if m.material_type == "link" and m.url and not m.telegram_file_id %}
+        <a class="btn" href="{{ m.url }}" target="_blank" rel="noopener">فتح الرابط</a>
+      {% else %}
+        <a class="btn" href="{{ url_for('download_material', material_id=m.id) }}">تحميل</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+<div class="empty-state"><p>لسه مفيش مواد مرفوعة للمحاضرة دي.</p></div>
+{% endif %}
+{% endblock %}

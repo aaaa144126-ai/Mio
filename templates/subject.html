@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="crumb">
+  <a href="{{ url_for('home') }}">الرئيسية</a> ←
+  <a href="{{ url_for('view_term', term_id=subject.term_id) }}">{{ subject.term.name }}</a> ←
+  {{ subject.name }}
+</div>
+<h1>{{ subject.name }}</h1>
+
+{% if subject.lectures %}
+<div class="card-list">
+  {% for lecture in subject.lectures %}
+  <a class="card-link" href="{{ url_for('view_lecture', lecture_id=lecture.id) }}">
+    <span>{{ lecture.name }}</span>
+    <span class="arrow">←</span>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><p>لسه مفيش محاضرات مضافة في المادة دي.</p></div>
+{% endif %}
+{% endblock %}

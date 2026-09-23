@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="crumb"><a href="{{ url_for('admin_dashboard') }}">لوحة الأدمن</a> ← كل الطلبات</div>
+<h1>كل طلبات المساعدة</h1>
+
+{% if requests %}
+  {% for r in requests %}
+  <div class="request-row">
+    <span class="status {{ r.status }}">
+      {% if r.status == "open" %}مفتوح{% elif r.status == "claimed" %}متكفل بيه{% else %}تم{% endif %}
+    </span>
+    — <strong>#{{ r.id }}</strong> — {{ r.subject_name or "عام" }}
+    <div class="meta">{{ r.description }}</div>
+    <div class="meta">من: {{ r.student_name }} (@{{ r.telegram_username or "-" }})</div>
+    {% if r.claimed_by_username %}
+    <div class="meta">اتكفل بيه: @{{ r.claimed_by_username }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="empty-state"><p>لسه مفيش طلبات.</p></div>
+{% endif %}
+{% endblock %}
